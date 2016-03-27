@@ -1,5 +1,6 @@
 package data.entities;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -11,6 +12,8 @@ import javax.persistence.ManyToOne;
 
 @Entity
 public class Token {
+	
+	public static final int VALIDITY_TIME = 1;
 
     @Id
     @GeneratedValue
@@ -18,6 +21,9 @@ public class Token {
 
     @Column(unique = true, nullable = false)
     private String value;
+    
+    @Column(nullable = false)
+    private Calendar expirationTime;
 
     @ManyToOne
     @JoinColumn
@@ -29,6 +35,8 @@ public class Token {
     public Token(User user) {
         assert user != null;
         this.user = user;
+        this.expirationTime = Calendar.getInstance();
+        this.expirationTime.add(Calendar.HOUR, VALIDITY_TIME);
         this.value = new Encrypt().encryptInBase64UrlSafe("" + user.getId() + user.getUsername() + Long.toString(new Date().getTime())
                 + user.getPassword());
     }
@@ -41,8 +49,20 @@ public class Token {
         return value;
     }
 
-    public User getUser() {
+    public Calendar getExpirationTime() {
+		return expirationTime;
+	}
+
+	public void setExpirationTime(Calendar expirationTime) {
+		this.expirationTime = expirationTime;
+	}
+
+	public User getUser() {
         return user;
+    }
+    
+    public boolean isExpired() {
+    	return expirationTime.before(Calendar.getInstance());
     }
 
     @Override
@@ -66,6 +86,6 @@ public class Token {
 
     @Override
     public String toString() {
-        return "Token [id=" + id + ", value=" + value + ", userId=" + user.getId() + "]";
+        return "Token [id=" + id + ", value=" + value + ", userId=" + user.getId() + ", expirationTime=" + expirationTime + "]";
     }
 }
