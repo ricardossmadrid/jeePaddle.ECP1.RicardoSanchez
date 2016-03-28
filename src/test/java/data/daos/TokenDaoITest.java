@@ -1,8 +1,11 @@
 package data.daos;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.junit.Test;
@@ -43,5 +46,34 @@ public class TokenDaoITest {
         assertEquals(token, tokens.get(i));
         assertEquals(new ArrayList<Token>(), tokenDao.findByUser(user));
     }
-
+    
+    @Test
+    public void testDeleteExpiredTokens() {
+    	User user = (User) daosService.getMap().get("u4");
+    	Token token = new Token(user);
+    	Calendar time = Calendar.getInstance();
+        time.add(Calendar.HOUR_OF_DAY, -1);
+        time.add(Calendar.MINUTE, -1);
+        token.setExpirationTime(time);
+        tokenDao.save(token);
+        assertTrue(existToken(token));
+        tokenDao.deleteExpiredTokens(Calendar.getInstance());
+        assertFalse(existToken(token));
+    }
+    
+    private boolean existToken(Token token) {
+    	List<Token> tokens = tokenDao.findByUser(token.getUser());
+    	boolean existToken = false;
+        if (tokens != null) {
+        	int i = 0;
+        	while(!existToken && i < tokens.size()) {
+        		if (token.equals(tokens.get(i))) {
+        			existToken = true;
+        		} else {
+        			i++;
+        		}
+        	}
+        }
+        return existToken;
+    }
 }
