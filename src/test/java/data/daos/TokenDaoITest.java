@@ -1,7 +1,9 @@
 package data.daos;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,8 +30,18 @@ public class TokenDaoITest {
     public void testFindByUser() {
         Token token = (Token) daosService.getMap().get("tu1");
         User user = (User) daosService.getMap().get("u4");
-        assertEquals(token, tokenDao.findByUser(token.getUser()));
-        assertNull(tokenDao.findByUser(user));
+        List<Token> tokens = tokenDao.findByUser(token.getUser());
+        boolean found = false;
+        int i = 0;
+        while (!found && i < tokens.size()) {
+        	if (tokens.get(i).getValue().equals(token.getValue())) {
+        		found = true;
+        	} else {
+        		i++;
+        	}
+        }
+        assertEquals(token, tokens.get(i));
+        assertEquals(new ArrayList<Token>(), tokenDao.findByUser(user));
     }
 
 }
