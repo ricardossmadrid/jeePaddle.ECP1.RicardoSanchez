@@ -29,5 +29,16 @@ public class TokenTest {
         auxiliarTime.add(Calendar.SECOND, -2);
         assertTrue(token.getExpirationTime().after(auxiliarTime));
     }
+    
+    @Test
+    public void testIsExpired() {
+    	User user = new User("u", "u@gmail.com", "p", Calendar.getInstance());
+        Token token = new Token(user);
+        assertTrue(!token.isExpired());
+        Calendar auxiliarTime = Calendar.getInstance();
+        auxiliarTime.add(Calendar.MINUTE, -1);
+        token.setExpirationTime(auxiliarTime);
+        assertTrue(token.isExpired());
+    }
 
 }
