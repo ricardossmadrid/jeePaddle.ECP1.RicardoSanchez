@@ -9,6 +9,7 @@ import data.daos.ReserveDao;
 import data.daos.TokenDao;
 import data.daos.TrainingDao;
 import data.daos.UserDao;
+import data.entities.Role;
 
 @Service
 public class DataService {
@@ -42,7 +43,8 @@ public class DataService {
         courtDao.deleteAll();
         userDao.deleteAll();
         trainingDao.deleteAll();
-        populate.createDefaultAdmin();
+        populate.createDefaultUser("admin", Role.ADMIN);
+        populate.createDefaultUser("trainer", Role.TRAINER);
     }
 
 }

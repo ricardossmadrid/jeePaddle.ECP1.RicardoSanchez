@@ -22,12 +22,6 @@ import data.entities.User;
 @PropertySource(ResourceNames.PROPERTIES)
 public class Populate {
 
-    private String adminUsername;
-
-    private String adminEmail;
-
-    private String adminPassword;
-
     @Autowired
     private Environment environment;
 
@@ -39,18 +33,16 @@ public class Populate {
 
     @PostConstruct
     public void readAdmin() {
-        adminUsername = environment.getProperty("admin.username");
-        adminEmail = environment.getProperty("admin.email");
-        adminPassword = environment.getProperty("admin.password");
-        createDefaultAdmin();
+        createDefaultUser("admin", Role.ADMIN);
+        createDefaultUser("trainer", Role.TRAINER);
     }
 
-    public void createDefaultAdmin() {
-        User adminSaved = userDao.findByUsernameOrEmail(adminUsername);
-        if (adminSaved == null) {
-            User admin = new User(adminUsername, adminEmail, adminPassword, new GregorianCalendar(1979, 07, 22));
-            userDao.save(admin);
-            authorizationDao.save(new Authorization(admin, Role.ADMIN));
+	public void createDefaultUser(String key, Role role) {
+        User userSaved = userDao.findByUsernameOrEmail(environment.getProperty(key + ".username"));
+        if (userSaved == null) {
+            User user = new User(environment.getProperty(key + ".username"), environment.getProperty(key + ".email"), environment.getProperty(key + ".password"), new GregorianCalendar(1979, 07, 22));
+            userDao.save(user);
+            authorizationDao.save(new Authorization(user, role));
         }
     }
 
