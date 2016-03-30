@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import business.api.exceptions.FullTrainingException;
+import business.api.exceptions.InvalidCourtReserveException;
 import business.api.exceptions.InvalidDateException;
 import business.api.exceptions.NotFoundCourtIdException;
 import business.api.exceptions.NotFoundPlayerInTrainingException;
@@ -60,7 +61,7 @@ public class TrainingResource {
 	
 	@RequestMapping(method = RequestMethod.POST)
 	@PreAuthorize("hasRole('TRAINER')")
-    public void createTraining(@AuthenticationPrincipal User activeUser, @RequestBody CreateTrainingWrapper trainingWrapper) throws NotFoundCourtIdException, InvalidDateException {
+    public void createTraining(@AuthenticationPrincipal User activeUser, @RequestBody CreateTrainingWrapper trainingWrapper) throws NotFoundCourtIdException, InvalidDateException, InvalidCourtReserveException {
 		if (!courtController.exist(trainingWrapper.getCourtId())) {
 			throw new NotFoundCourtIdException("No existe la pista: " + trainingWrapper.getCourtId());
 		}
@@ -68,7 +69,9 @@ public class TrainingResource {
 			throw new InvalidDateException("La fecha de inicio: " + trainingWrapper.getStartDate() + " es más tarde que la de fin: " + trainingWrapper.getStartDate());
 		}
 		validateDay(trainingWrapper.getStartDate());
-		trainingController.createTraining(activeUser, trainingWrapper);
+		if (!trainingController.createTraining(activeUser.getUsername(), trainingWrapper)) {
+			throw new InvalidCourtReserveException("La pista " + trainingWrapper.getCourtId() + " está ya reservada para alguna de las fechas seleccionadas");
+		}
 	}
 	
 	@RequestMapping(method = RequestMethod.DELETE)
@@ -99,7 +102,7 @@ public class TrainingResource {
 		if (!trainingController.exist(trainingId)) {
 			throw new NotFoundTrainingIdException("No se ha encontrado el entrenamiento: " + trainingId);
 		}
-		if (!trainingController.registerForTraining(activeUser, trainingId)) {
+		if (!trainingController.registerForTraining(activeUser.getUsername(), trainingId)) {
 			throw new FullTrainingException("No pueden entrar más jugadores en el entreniamiento: " + trainingId);
 		}
 	}
