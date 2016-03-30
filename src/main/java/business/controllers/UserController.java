@@ -38,4 +38,9 @@ public class UserController {
             return false;
         }
     }
+
+	public boolean exist(String playerName) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
