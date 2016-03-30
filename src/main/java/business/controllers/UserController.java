@@ -40,7 +40,6 @@ public class UserController {
     }
 
 	public boolean exist(String playerName) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.userDao.findByUsernameOrEmail(playerName) != null;
 	}
 }
