@@ -79,8 +79,8 @@ public class DaosService {
 		startDate.set(Calendar.MINUTE, 0);
 		startDate.set(Calendar.SECOND, 0);
 		
-		endingDate = startDate;
-		endingDate.set(Calendar.WEEK_OF_YEAR, startDate.getWeekYear() + 4);
+		endingDate = (Calendar) startDate.clone();
+		endingDate.set(Calendar.WEEK_OF_YEAR, startDate.get(Calendar.WEEK_OF_YEAR) + 4);
 		endingDate.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
 		endingDate.set(Calendar.HOUR_OF_DAY, 12);
 		endingDate.set(Calendar.MINUTE, 0);
@@ -90,7 +90,7 @@ public class DaosService {
 		
 		while (startDate.before(endingDate)) {
 			reserveDao.save(new Reserve(courtDao.findOne(5), trainer, startDate));
-			startDate.set(Calendar.WEEK_OF_YEAR, startDate.getWeekYear() + 1);
+			startDate.set(Calendar.WEEK_OF_YEAR, startDate.get(Calendar.WEEK_OF_YEAR) + 1);
 			startDate.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
 			startDate.set(Calendar.HOUR_OF_DAY, 11);
 			startDate.set(Calendar.MINUTE, 0);
