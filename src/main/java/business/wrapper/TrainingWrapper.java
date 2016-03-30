@@ -5,6 +5,7 @@ import java.util.List;
 
 public class TrainingWrapper {
 	
+	private int id;
 	private String trainer;
 	private List<String> players;
 	private int court;
@@ -14,13 +15,18 @@ public class TrainingWrapper {
 	public TrainingWrapper() {
 	}
 
-	public TrainingWrapper(String trainer, List<String> players, int court, Calendar startDate, Calendar endingDate) {
+	public TrainingWrapper(int id, String trainer, List<String> players, int court, Calendar startDate, Calendar endingDate) {
 		super();
+		this.id = id;
 		this.trainer = trainer;
 		this.players = players;
 		this.court = court;
 		this.startDate = startDate;
 		this.endingDate = endingDate;
+	}
+	
+	public int getId() {
+		return this.id;
 	}
 
 	public String getTrainer() {

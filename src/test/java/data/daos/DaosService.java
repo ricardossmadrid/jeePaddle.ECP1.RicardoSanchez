@@ -74,6 +74,7 @@ public class DaosService {
 		Calendar startDate = Calendar.getInstance(),
 				endingDate;
 		
+		startDate.set(Calendar.WEEK_OF_YEAR, startDate.get(Calendar.WEEK_OF_YEAR) + 1);
 		startDate.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
 		startDate.set(Calendar.HOUR_OF_DAY, 11);
 		startDate.set(Calendar.MINUTE, 0);

@@ -82,7 +82,7 @@ public class TrainingResource {
 		}
 	}
 	
-	@RequestMapping(method = RequestMethod.DELETE, value = Uris.ID + Uris.USERS)
+	@RequestMapping(value = Uris.ID + Uris.USERS, method = RequestMethod.DELETE)
 	@PreAuthorize("hasRole('TRAINER')")
 	public void deletePlayerTraining(@RequestBody(required = true) String playerName, @PathVariable int trainingId) throws NotFoundUserNameException, NotFoundTrainingIdException, NotFoundPlayerInTrainingException {
 		if (!userController.exist(playerName)) {
@@ -96,7 +96,7 @@ public class TrainingResource {
 		}
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, value = Uris.ID + Uris.USERS)
+	@RequestMapping(value = Uris.ID + Uris.USERS, method = RequestMethod.POST)
 	@PreAuthorize("hasRole('PLAYER')")
 	public void registerForTraining(@AuthenticationPrincipal User activeUser, @PathVariable int trainingId) throws NotFoundTrainingIdException, FullTrainingException {
 		if (!trainingController.exist(trainingId)) {

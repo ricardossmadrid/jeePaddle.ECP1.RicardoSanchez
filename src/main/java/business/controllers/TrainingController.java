@@ -71,7 +71,7 @@ public class TrainingController {
 				underhandedReservation = true;
 				break;
 			}
-			startDate.set(Calendar.WEEK_OF_YEAR, startDate.getWeekYear() + 1);
+			startDate.set(Calendar.WEEK_OF_YEAR, startDate.get(Calendar.WEEK_OF_YEAR) + 1);
 			startDate.set(Calendar.DAY_OF_WEEK, dayOfWeek);
 			startDate.set(Calendar.HOUR_OF_DAY, hour);
 			startDate.set(Calendar.MINUTE, 0);
@@ -134,7 +134,7 @@ public class TrainingController {
 			for (int j = 0; j < trainings.get(i).getPlayers().size(); j++){
 				players.add(trainings.get(i).getPlayers().get(j).getUsername());
 			}
-			trainingsWrapper.add(new TrainingWrapper(trainings.get(i).getTrainer().getUsername(), players, trainings.get(i).getCourt().getId(), trainings.get(i).getStartDate(), trainings.get(i).getEndingDate()));
+			trainingsWrapper.add(new TrainingWrapper(trainings.get(i).getId(), trainings.get(i).getTrainer().getUsername(), players, trainings.get(i).getCourt().getId(), trainings.get(i).getStartDate(), trainings.get(i).getEndingDate()));
 		}
 		return trainingsWrapper;
 	}
