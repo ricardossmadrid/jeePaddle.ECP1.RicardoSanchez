@@ -16,6 +16,7 @@ import data.entities.Court;
 import data.entities.Reserve;
 import data.entities.Role;
 import data.entities.Token;
+import data.entities.Training;
 import data.entities.User;
 import data.services.DataService;
 
@@ -36,6 +37,9 @@ public class DaosService {
 
     @Autowired
     private ReserveDao reserveDao;
+    
+    @Autowired
+    private TrainingDao trainingDao;
 
     @Autowired
     private DataService genericService;
@@ -44,18 +48,15 @@ public class DaosService {
 
     @PostConstruct
     public void populate() {
-        map = new HashMap<>();
-        User[] users = this.createPlayers(0, 4);
-        for (User user : users) {
+    	map = new HashMap<>();
+        User[] players = this.createUser(0, 4, Role.PLAYER);
+        putOnMapWithToken(players);
+        for (User user : this.createUser(4, 4, Role.PLAYER)) {
             map.put(user.getUsername(), user);
         }
-        for (Token token : this.createTokens(users)) {
-            map.put("t" + token.getUser().getUsername(), token);
-        }
-        for (User user : this.createPlayers(4, 4)) {
-            map.put(user.getUsername(), user);
-        }
-        this.createCourts(1, 4);
+        User[] trainers = this.createUser(8, 1, Role.TRAINER);
+        putOnMapWithToken(trainers);
+        this.createCourts(1, 5);
         Calendar date = Calendar.getInstance();
         date.add(Calendar.DAY_OF_YEAR, 1);
         date.set(Calendar.HOUR_OF_DAY, 9);
@@ -64,16 +65,55 @@ public class DaosService {
         date.set(Calendar.MILLISECOND, 0);
         for (int i = 0; i < 4; i++) {
             date.add(Calendar.HOUR_OF_DAY, 1);
-            reserveDao.save(new Reserve(courtDao.findOne(i+1), users[i], date));
+            reserveDao.save(new Reserve(courtDao.findOne(i+1), players[i], date));
+        }
+        this.createTraining(trainers[0]);
+    }
+
+	public void createTraining(User trainer) {
+		Calendar startDate = Calendar.getInstance(),
+				endingDate;
+		
+		startDate.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
+		startDate.set(Calendar.HOUR_OF_DAY, 11);
+		startDate.set(Calendar.MINUTE, 0);
+		startDate.set(Calendar.SECOND, 0);
+		
+		endingDate = startDate;
+		endingDate.set(Calendar.WEEK_OF_YEAR, startDate.getWeekYear() + 4);
+		endingDate.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
+		endingDate.set(Calendar.HOUR_OF_DAY, 12);
+		endingDate.set(Calendar.MINUTE, 0);
+		endingDate.set(Calendar.SECOND, 0);
+		
+		trainingDao.save(new Training(courtDao.findOne(5), trainer, startDate, endingDate));
+		
+		while (startDate.before(endingDate)) {
+			reserveDao.save(new Reserve(courtDao.findOne(5), trainer, startDate));
+			startDate.set(Calendar.WEEK_OF_YEAR, startDate.getWeekYear() + 1);
+			startDate.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
+			startDate.set(Calendar.HOUR_OF_DAY, 11);
+			startDate.set(Calendar.MINUTE, 0);
+			startDate.set(Calendar.SECOND, 0);
+		}
+	}
+
+	public void putOnMapWithToken(User[] users) {
+    	
+        for (User user : users) {
+            map.put(user.getUsername(), user);
+        }
+        for (Token token : this.createTokens(users)) {
+            map.put("t" + token.getUser().getUsername(), token);
         }
     }
 
-    public User[] createPlayers(int initial, int size) {
+    public User[] createUser(int initial, int size, Role role) {
         User[] users = new User[size];
         for (int i = 0; i < size; i++) {
             users[i] = new User("u" + (i + initial), "u" + (i + initial) + "@gmail.com", "p", Calendar.getInstance());
             userDao.save(users[i]);
-            authorizationDao.save(new Authorization(users[i], Role.PLAYER));
+            authorizationDao.save(new Authorization(users[i], role));
         }
         return users;
     }

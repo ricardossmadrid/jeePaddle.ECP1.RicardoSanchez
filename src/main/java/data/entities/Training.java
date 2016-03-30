@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -24,8 +25,7 @@ public class Training {
     @JoinColumn
     private Court court;
 	
-	@ManyToMany
-    @JoinColumn
+	@ManyToMany(fetch = FetchType.EAGER)
     private List<User> players;
 	
 	@ManyToOne
@@ -64,6 +64,10 @@ public class Training {
 			removed = true;
 		}
 		return removed;
+	}
+
+	public int getId() {
+		return id;
 	}
 
 	public Court getCourt() {
